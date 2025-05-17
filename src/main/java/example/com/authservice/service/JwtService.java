@@ -3,6 +3,8 @@ package example.com.authservice.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +21,8 @@ public class JwtService {
 
     @Value("${jwt.secret}")
     private String secret;
+
+
 
     public String extractUsername(String token){
         return extractClaim(token, Claims::getSubject);
@@ -38,7 +42,7 @@ public class JwtService {
                 .getBody();
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateAccessToken(UserDetails userDetails) {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date())
@@ -47,13 +51,24 @@ public class JwtService {
                 .compact();
     }
 
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        return Jwts.builder()
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(Date.from(Instant.now().plus(15, ChronoUnit.DAYS)))
+                .signWith(SignatureAlgorithm.HS256, secret.getBytes())
+                .compact();
+    }
+
+
+
     public boolean isTokenValid(String token, UserDetails userDetails){
         String userName = extractUsername(token);
         return userName.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
-    private boolean isTokenExpired(String token){
+    public boolean isTokenExpired(String token){
         return extractAllClaims(token).getExpiration().before(new Date());
     }
-
 }

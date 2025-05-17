@@ -2,6 +2,7 @@ package example.com.authservice.service;
 
 import example.com.authservice.exception.NotFoundException;
 import example.com.authservice.exception.ValidationException;
+import example.com.authservice.kafka.KafkaProducer;
 import example.com.authservice.model.User;
 import example.com.authservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
+
+    private final KafkaProducer kafkaProducer;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
@@ -28,7 +31,9 @@ public class UserService {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        User createdUser  = userRepository.save(user);
+        kafkaProducer.sendMessage("created-user", createdUser);
+        return createdUser;
     }
 
     @Transactional(readOnly=true)

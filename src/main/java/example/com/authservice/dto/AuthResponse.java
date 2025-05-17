@@ -1,11 +1,15 @@
 package example.com.authservice.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
+@AllArgsConstructor
 public class AuthResponse {
-    private String token;
-    public AuthResponse(String token) {
-        this.token = token;
-    }
+    private String accessToken;
+    private String refreshToken;
+
+
 }
