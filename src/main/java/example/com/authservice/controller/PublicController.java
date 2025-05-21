@@ -42,17 +42,5 @@ public class PublicController {
 
 
 
-//    @GetMapping("/session-info")
-//    public ResponseEntity<Map<String, Object>> sessionInfo(HttpSession session) {
-//        Map<String, Object> attributes = new HashMap<>();
-//        Enumeration<String> names = session.getAttributeNames();
-//        while (names.hasMoreElements()) {
-//            String name = names.nextElement();
-//            attributes.put(name, session.getAttribute(name));
-//        }
-//        return ResponseEntity.ok(attributes);
-//    }
-
-
 
 }
